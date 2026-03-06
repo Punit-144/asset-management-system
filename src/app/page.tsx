@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { getUniqueAssetNames, getAssetDetailsByName, submitAssetLog, getCheckedOutAssets } from "./actions";
 import { Loader2, CheckCircle2, AlertCircle, FileText, X } from "lucide-react";
+import { createBrowserClient } from '@supabase/ssr';
 
 type AssetData = { id: string; availableQuantity: number; totalQuantity: number };
 type Summary = { available: number; total: number };
@@ -34,6 +35,28 @@ export default function AssetManagementForm() {
   const [overviewData, setOverviewData] = useState<any[]>([]);
   const [loadingOverview, setLoadingOverview] = useState(false);
 
+  // Supabase client initialization
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
+  // AUTHENTICATION CHECK
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        window.location.href = '/login';
+      } else {
+        // Pre-fill fields but leave them editable as requested
+        setIssuedTo(user.user_metadata.full_name || "");
+        setEmailAddress(user.email || "");
+      }
+    };
+    checkUser();
+  }, [supabase]);
+
+  // Fetch unique asset names on component mount
   useEffect(() => {
     async function fetchNames() {
       const res = await getUniqueAssetNames();
