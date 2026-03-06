@@ -1,14 +1,38 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+// Replaces your 'Inventory' sheet
+model Asset {
+  id                String   @id
+  name              String
+  category          String?
+  Location          String?
+  availableQuantity Int
+  totalQuantity     Int
+  logs              Log[]
+
+  @@index([name])
+}
+
+// Replaces your 'Logs' sheet
+model Log {
+  id           String   @id @default(uuid())
+  assetId      String
+  asset        Asset    @relation(fields: [assetId], references: [id])
+  action       Action
+  issuedBy     String
+  issuedTo     String
+  emailAddress String
+  notes        String?
+  createdAt    DateTime @default(now())
+}
+
+enum Action {
+  CHECK_OUT
+  CHECK_IN
 }
