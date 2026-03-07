@@ -148,3 +148,28 @@ export async function submitAssetLog(formData: {
     return { success: false, message: "An unexpected error occurred during submission." };
   }
 }
+
+// 📜 FETCH SYSTEM LOGS
+export async function getSystemLogs() {
+  try {
+    // Fetch all logs, ordered by the newest first
+    const logs = await prisma.log.findMany({
+      orderBy: {
+        createdAt: 'desc'
+      },
+      include: {
+        // Pull the name of the asset from the linked Asset table
+        asset: {
+          select: {
+            name: true
+          }
+        }
+      }
+    });
+
+    return { success: true, data: logs };
+  } catch (error) {
+    console.error("Error fetching system logs:", error);
+    return { success: false, message: "Failed to load system logs." };
+  }
+}

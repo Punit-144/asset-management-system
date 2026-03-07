@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { getUniqueAssetNames, getAssetDetailsByName, submitAssetLog, getCheckedOutAssets } from "./actions";
-import { Loader2, CheckCircle2, AlertCircle, FileText, X } from "lucide-react";
+import { Loader2, CheckCircle2, AlertCircle, FileText, X, ClipboardList } from "lucide-react";
+import Link from "next/link";
 import { createBrowserClient } from '@supabase/ssr';
+
 
 type AssetData = { id: string; availableQuantity: number; totalQuantity: number };
 type Summary = { available: number; total: number };
@@ -131,6 +133,14 @@ export default function AssetManagementForm() {
     <div className="min-h-screen bg-gray-100 flex items-start justify-center p-4 sm:p-8 font-sans text-gray-800">
       <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-2xl border border-gray-200 relative">
         
+       {/* System Logs Button */}
+        <Link 
+          href="/logs"
+          className="absolute top-6 left-6 flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-800 bg-gray-100 px-3 py-1.5 rounded-full transition-colors"
+        >
+          <ClipboardList className="w-4 h-4" /> System Logs
+        </Link>
+
         {/* Live Overview Button */}
         <button 
           onClick={fetchOverview}
